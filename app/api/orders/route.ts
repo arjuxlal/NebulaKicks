@@ -49,7 +49,8 @@ export async function GET(_req: NextRequest) {
         return NextResponse.json(orders);
     } catch (error) {
         console.error("GET Orders Error:", error);
-        return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
+        // Return empty array instead of error object to prevent client crash
+        return NextResponse.json([]);
     }
 }
 

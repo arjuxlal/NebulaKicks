@@ -94,11 +94,12 @@ export default function AdminDashboard() {
                 orderRes.json(),
                 catRes.json(),
             ]);
-            setProducts(prodData);
-            setOrders(orderData);
-            setCategories(catData);
+            setProducts(Array.isArray(prodData) ? prodData : []);
+            setOrders(Array.isArray(orderData) ? orderData : []);
+            setCategories(Array.isArray(catData) ? catData : []);
         } catch (err) {
             console.error("Fetch Data Error:", err);
+            setError("Failed to sync with command center. Please check your connection.");
         } finally {
             setLoading(false);
         }
