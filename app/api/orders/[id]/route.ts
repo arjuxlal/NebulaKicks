@@ -22,7 +22,7 @@ export async function GET(
 
         const order = { id: doc.id, ...doc.data() };
         return NextResponse.json(order);
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: "Failed to fetch order" }, { status: 500 });
     }
 }
@@ -48,7 +48,7 @@ export async function PATCH(
         await docRef.update({ status });
 
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
     }
 }
@@ -67,7 +67,7 @@ export async function DELETE(
         await docRef.delete();
 
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: "Failed to delete order" }, { status: 500 });
     }
 }

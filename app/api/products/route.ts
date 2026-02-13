@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         const newDoc = await productsRef.add(productData);
 
         return NextResponse.json({ id: newDoc.id, ...productData }, { status: 201 });
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
     }
 }

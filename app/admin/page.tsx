@@ -53,6 +53,7 @@ export default function AdminDashboard() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [error, setError] = useState("");
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
     // Form states
@@ -62,11 +63,9 @@ export default function AdminDashboard() {
         image: "",
         images: [] as string[],
         description: "",
-        stock: "10",
         category: "",
     });
     const [files, setFiles] = useState<FileList | null>(null);
-    const [imageUrlInput, setImageUrlInput] = useState("");
 
     // Category form states
     const [newCategory, setNewCategory] = useState({
@@ -129,8 +128,7 @@ export default function AdminDashboard() {
     const handleCreateProduct = async (e: React.FormEvent) => {
         e.preventDefault();
         setUploading(true);
-        let allImages = [...newProduct.images];
-        if (newProduct.image) allImages.push(newProduct.image);
+        const allImages = [...(newProduct.images || []), newProduct.image].filter(Boolean);
 
         try {
             // 1. Upload Files if selected

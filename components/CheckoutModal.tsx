@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CreditCard, Truck, CheckCircle, ArrowRight, User } from "lucide-react";
+import { X, CreditCard, Truck, CheckCircle } from "lucide-react";
 import { useCart } from "@/lib/store";
 import { useSession } from "next-auth/react";
 
@@ -80,9 +80,13 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     amount: paymentData.amount,
                     currency: paymentData.currency,
                     name: "Nebula Kicks",
-                    description: "Sneaker Purchase",
+                    description: "Payment for order",
                     order_id: paymentData.orderId,
-                    handler: async function (response: any) {
+                    handler: async function (response: {
+                        razorpay_payment_id: string;
+                        razorpay_order_id: string;
+                        razorpay_signature: string;
+                    }) {
                         const verifyRes = await fetch("/api/payment/verify", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -106,8 +110,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     theme: { color: "#8B5CF6" },
                     modal: { ondismiss: () => setLoading(false) }
                 };
-                const razorpay = new (window as any).Razorpay(options);
-                razorpay.open();
+                const rzp1 = new (window as any).Razorpay(options);
+                rzp1.open();
             };
         } catch (err) {
             console.error("Checkout Error:", err);

@@ -30,7 +30,7 @@ export const verifyPaymentSignature = (
     paymentId: string,
     signature: string
 ): boolean => {
-    const crypto = require('crypto');
+    const crypto = await import('crypto');
     const generatedSignature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
         .update(`${orderId}|${paymentId}`)

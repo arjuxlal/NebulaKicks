@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
 }
 
-export async function GET(req: Request) {
+export async function GET(_req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -71,7 +71,7 @@ export async function PATCH(req: Request) {
         await orderRef.update({ status });
 
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
     }
 }
