@@ -15,6 +15,7 @@ if (!admin.apps.length) {
                     clientEmail,
                     privateKey: privateKey.replace(/\\n/g, '\n'),
                 }),
+                storageBucket: process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
             });
             console.log("Firebase Admin Initialized");
         } catch (error) {
@@ -49,3 +50,14 @@ export const auth = admin.apps.length ? admin.auth() : {
     getUser: async () => ({}),
     verifyIdToken: async () => ({}),
 } as any;
+
+export const storage = admin.apps.length ? admin.storage() : {
+    bucket: () => ({
+        file: () => ({
+            save: async () => { },
+            makePublic: async () => { },
+            publicUrl: () => "https://placeholder.com/image.jpg",
+        })
+    })
+} as any;
+
