@@ -64,8 +64,10 @@ export default function AdminDashboard() {
         images: [] as string[],
         description: "",
         category: "",
+        stock: "10",
     });
     const [files, setFiles] = useState<FileList | null>(null);
+    const [imageUrlInput, setImageUrlInput] = useState("");
 
     // Category form states
     const [newCategory, setNewCategory] = useState({
