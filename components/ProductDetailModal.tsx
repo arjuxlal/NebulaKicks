@@ -110,7 +110,7 @@ export default function ProductDetailModal({
                                                 className={`w-16 h-16 rounded-xl border-2 transition-all flex-shrink-0 bg-black/40 ${activeImageIndex === idx ? "border-neon-cyan shadow-[0_0_10px_#00f2ea]" : "border-white/10 opacity-50 hover:opacity-100"
                                                     }`}
                                             >
-                                                <img src={img} className="w-full h-full object-contain p-2" />
+                                                <img src={img} alt={`Product view ${idx + 1}`} className="w-full h-full object-contain p-2" />
                                             </button>
                                         ))}
                                     </div>

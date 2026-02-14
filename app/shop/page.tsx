@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Search, SlidersHorizontal } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
@@ -30,38 +30,7 @@ export default function ShopPage() {
     const [showFilters, setShowFilters] = useState(false);
     const [categories, setCategories] = useState<string[]>(["All"]);
 
-    useEffect(() => {
-        fetchProducts();
-        fetchCategories();
-    }, []);
-
-    useEffect(() => {
-        filterAndSortProducts();
-    }, [products, searchQuery, selectedCategory, sortBy, priceRange]);
-
-    const fetchProducts = async () => {
-        try {
-            const res = await fetch("/api/products");
-            const data = await res.json();
-            setProducts(data);
-            setFilteredProducts(data);
-        } catch (error) {
-            console.error("Failed to fetch products:", error);
-        }
-    };
-
-    const fetchCategories = async () => {
-        try {
-            const res = await fetch("/api/categories");
-            const data = await res.json();
-            const categoryNames = data.map((cat: any) => cat.name);
-            setCategories(["All", ...categoryNames]);
-        } catch (error) {
-            console.error("Failed to fetch categories:", error);
-        }
-    };
-
-    const filterAndSortProducts = () => {
+    const filterAndSortProducts = useCallback(() => {
         let filtered = [...products];
 
         // Search filter
@@ -112,6 +81,37 @@ export default function ShopPage() {
         }
 
         setFilteredProducts(filtered);
+    }, [products, searchQuery, selectedCategory, sortBy, priceRange, categories]);
+
+    useEffect(() => {
+        fetchProducts();
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        filterAndSortProducts();
+    }, [filterAndSortProducts]);
+
+    const fetchProducts = async () => {
+        try {
+            const res = await fetch("/api/products");
+            const data = await res.json();
+            setProducts(data);
+            setFilteredProducts(data);
+        } catch (error) {
+            console.error("Failed to fetch products:", error);
+        }
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch("/api/categories");
+            const data = await res.json();
+            const categoryNames = data.map((cat: { name: string }) => cat.name);
+            setCategories(["All", ...categoryNames]);
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+        }
     };
 
     return (
@@ -256,7 +256,7 @@ export default function ShopPage() {
                                         ...product,
                                         image: Array.isArray(product.images) && product.images.length > 0
                                             ? product.images[0]
-                                            : (product as any).image || '/placeholder-shoe.png'
+                                            : product.image || '/placeholder-shoe.png'
                                     }}
                                     onView={() => setSelectedProduct(product)}
                                 />                            </motion.div>

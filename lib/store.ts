@@ -12,7 +12,7 @@ interface CartItem {
 interface CartStore {
     items: CartItem[];
     isOpen: boolean;
-    addItem: (product: any, size?: string) => void;
+    addItem: (product: Omit<CartItem, 'quantity'>, size?: string) => void;
     removeItem: (id: string, size?: string) => void;
     clearCart: () => void;
     toggleCart: () => void;

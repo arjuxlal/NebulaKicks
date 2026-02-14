@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Package, ClipboardList, TrendingUp, Settings, Trash2, CheckCircle, Clock, Truck, Upload, Loader2, LogOut, X } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 interface Product {
     id: string;
@@ -46,12 +45,10 @@ interface Category {
 
 export default function AdminDashboard() {
     const { data: session } = useSession();
-    const router = useRouter();
     const [activeTab, setActiveTab] = useState<"products" | "orders" | "categories" | "analytics" | "settings">("products");
     const [products, setProducts] = useState<Product[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
@@ -81,7 +78,6 @@ export default function AdminDashboard() {
     }, []);
 
     const fetchData = async () => {
-        setLoading(true);
         try {
             const [prodRes, orderRes, catRes] = await Promise.all([
                 fetch("/api/products"),
@@ -98,8 +94,6 @@ export default function AdminDashboard() {
             setCategories(catData);
         } catch (err) {
             console.error("Fetch Data Error:", err);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -129,7 +123,7 @@ export default function AdminDashboard() {
     const handleCreateProduct = async (e: React.FormEvent) => {
         e.preventDefault();
         setUploading(true);
-        let allImages = [...newProduct.images];
+        const allImages = [...newProduct.images];
         if (newProduct.image) allImages.push(newProduct.image);
 
         try {
@@ -478,7 +472,7 @@ export default function AdminDashboard() {
                                             <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                                                 {newProduct.images.map((img, idx) => (
                                                     <div key={idx} className="relative group flex-shrink-0">
-                                                        <img src={img} className="w-20 h-20 object-cover rounded-xl border border-white/10 bg-white/5" />
+                                                        <img src={img} alt={`Product image ${idx + 1}`} className="w-20 h-20 object-cover rounded-xl border border-white/10 bg-white/5" />
                                                         <button
                                                             type="button"
                                                             onClick={() => {
@@ -522,7 +516,7 @@ export default function AdminDashboard() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                                     {products.map((product) => (
                                         <div key={product.id} className="glass-dark border-white/5 p-6 rounded-2xl flex items-center gap-4">
-                                            <img src={product.image} className="w-16 h-16 object-contain rounded-lg bg-white/5" />
+                                            <img src={product.image || '/placeholder-shoe.png'} alt={product.name} className="w-16 h-16 object-cover rounded-lg bg-white/5" />
                                             <div className="flex-1">
                                                 <h4 className="font-bold line-clamp-1">{product.name}</h4>
                                                 <p className="text-neon-cyan font-mono text-sm">₹{product.price}</p>

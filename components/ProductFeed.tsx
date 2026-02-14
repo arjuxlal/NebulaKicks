@@ -37,7 +37,7 @@ export default function ProductFeed({ category }: { category?: string }) {
             }
         }
         fetchProducts();
-    }, []);
+    }, [category]);
 
     const openModal = (product: Product) => {
         setSelectedProduct(product);

@@ -30,6 +30,7 @@ export const verifyPaymentSignature = (
     paymentId: string,
     signature: string
 ): boolean => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const crypto = require('crypto');
     const generatedSignature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
