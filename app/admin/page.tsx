@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Package, ClipboardList, TrendingUp, Settings, Trash2, CheckCircle, Clock, Truck, Upload, Loader2, LogOut, X, ShieldAlert } from "lucide-react";
+import { Plus, Package, ClipboardList, TrendingUp, Settings, Trash2, CheckCircle, Clock, Truck, Upload, Loader2, LogOut, X } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
 
 interface Product {
     id: string;
@@ -54,7 +53,6 @@ export default function AdminDashboard() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
-    const [error, setError] = useState("");
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
     // Form states
@@ -64,8 +62,8 @@ export default function AdminDashboard() {
         image: "",
         images: [] as string[],
         description: "",
-        category: "",
         stock: "10",
+        category: "",
     });
     const [files, setFiles] = useState<FileList | null>(null);
     const [imageUrlInput, setImageUrlInput] = useState("");
@@ -95,37 +93,32 @@ export default function AdminDashboard() {
                 orderRes.json(),
                 catRes.json(),
             ]);
-            setProducts(Array.isArray(prodData) ? prodData : []);
-            setOrders(Array.isArray(orderData) ? orderData : []);
-            setCategories(Array.isArray(catData) ? catData : []);
+            setProducts(prodData);
+            setOrders(orderData);
+            setCategories(catData);
         } catch (err) {
             console.error("Fetch Data Error:", err);
-            setError("Failed to sync with command center. Please check your connection.");
         } finally {
             setLoading(false);
         }
     };
 
-    // Analytics calculations with safety guards
-    const safeOrders = Array.isArray(orders) ? orders : [];
-    const validOrders = safeOrders.filter(order => order && !["CANCELLED", "RETURNED"].includes(order.status));
-    const lostOrders = safeOrders.filter(order => order && ["CANCELLED", "RETURNED"].includes(order.status));
+    // Analytics calculations
+    const validOrders = orders.filter(order => !["CANCELLED", "RETURNED"].includes(order.status));
+    const lostOrders = orders.filter(order => ["CANCELLED", "RETURNED"].includes(order.status));
 
     const analytics = {
-        totalRevenue: validOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0),
-        totalOrders: safeOrders.length,
+        totalRevenue: validOrders.reduce((sum, order) => sum + order.total, 0),
+        totalOrders: orders.length,
         averageOrderValue: validOrders.length > 0
-            ? validOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0) / validOrders.length
+            ? validOrders.reduce((sum, order) => sum + order.total, 0) / validOrders.length
             : 0,
-        totalLoss: lostOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0),
-        ordersByStatus: safeOrders.reduce((acc, order) => {
-            if (order && order.status) {
-                acc[order.status] = (acc[order.status] || 0) + 1;
-            }
+        totalLoss: lostOrders.reduce((sum, order) => sum + order.total, 0),
+        ordersByStatus: orders.reduce((acc, order) => {
+            acc[order.status] = (acc[order.status] || 0) + 1;
             return acc;
         }, {} as Record<string, number>),
     };
-
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -136,7 +129,8 @@ export default function AdminDashboard() {
     const handleCreateProduct = async (e: React.FormEvent) => {
         e.preventDefault();
         setUploading(true);
-        const allImages = [...(newProduct.images || []), newProduct.image].filter(Boolean);
+        let allImages = [...newProduct.images];
+        if (newProduct.image) allImages.push(newProduct.image);
 
         try {
             // 1. Upload Files if selected
@@ -382,15 +376,14 @@ export default function AdminDashboard() {
                 </header>
 
                 <AnimatePresence mode="wait">
-                    {activeTab === "products" && (
+                    {activeTab === "products" ? (
                         <motion.div
-                            key="products-tab"
+                            key="products"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             className="space-y-12"
                         >
-
                             {/* Add Product Form */}
                             <section className="glass-dark rounded-3xl p-8 border-white/5">
                                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -546,16 +539,13 @@ export default function AdminDashboard() {
                                 </div>
                             </section>
                         </motion.div>
-                    )}
-
-                    {activeTab === "orders" && (
+                    ) : (
                         <motion.div
-                            key="orders-tab"
+                            key="orders"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                         >
-
                             <div className="glass-dark rounded-3xl overflow-hidden border-white/5">
                                 <table className="w-full text-left">
                                     <thead className="bg-white/10 text-xs font-bold tracking-widest text-white/40">
@@ -636,14 +626,7 @@ export default function AdminDashboard() {
 
                     {/* Categories Tab */}
                     {activeTab === "categories" && (
-                        <motion.div
-                            key="categories-tab"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="space-y-6"
-                        >
-
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                             <div>
                                 <h2 className="text-3xl font-orbitron font-bold mb-2">Category Management</h2>
                                 <p className="text-white/50">Organize products with custom categories</p>
@@ -768,14 +751,7 @@ export default function AdminDashboard() {
 
                     {/* Analytics Tab */}
                     {activeTab === "analytics" && (
-                        <motion.div
-                            key="analytics-tab"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="space-y-6"
-                        >
-
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                             <div>
                                 <h2 className="text-3xl font-orbitron font-bold mb-2">Analytics Dashboard</h2>
                                 <p className="text-white/50">Business insights and performance metrics</p>
@@ -857,14 +833,7 @@ export default function AdminDashboard() {
 
                     {/* Settings Tab */}
                     {activeTab === "settings" && (
-                        <motion.div
-                            key="settings-tab"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="space-y-6"
-                        >
-
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                             <div>
                                 <h2 className="text-3xl font-orbitron font-bold mb-2">Settings</h2>
                                 <p className="text-white/50">Store configuration and system information</p>
@@ -1170,6 +1139,6 @@ export default function AdminDashboard() {
                     }
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

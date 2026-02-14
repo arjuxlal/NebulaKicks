@@ -13,7 +13,7 @@ function AuthContent() {
     const callbackUrl = searchParams.get("callbackUrl") || "/";
     const error = searchParams.get("error");
 
-    const [isLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",

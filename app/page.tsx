@@ -1,14 +1,10 @@
-import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import CartDrawer from "@/components/CartDrawer";
 import ProductFeed from "@/components/ProductFeed";
 
 export default function Home() {
   return (
     <main className="relative min-h-screen">
-      <Navbar />
       <Hero />
-      <CartDrawer />
 
       {/* Product Feed Section */}
       <section className="bg-deep-dark py-24 px-4 overflow-hidden">

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/firebase";
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -49,8 +49,7 @@ export async function GET(_req: NextRequest) {
         return NextResponse.json(orders);
     } catch (error) {
         console.error("GET Orders Error:", error);
-        // Return empty array instead of error object to prevent client crash
-        return NextResponse.json([]);
+        return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
     }
 }
 
@@ -72,7 +71,7 @@ export async function PATCH(req: Request) {
         await orderRef.update({ status });
 
         return NextResponse.json({ success: true });
-    } catch (_error) {
+    } catch (error) {
         return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
     }
 }

@@ -8,9 +8,8 @@ export async function GET() {
         const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         return NextResponse.json(products);
     } catch (error) {
-        console.error("GET Products Error:", error);
-        // Return empty array instead of error object to prevent client crash
-        return NextResponse.json([]);
+        console.error("GET Products Error Debug:", error);
+        return NextResponse.json({ error: "Failed to fetch products", details: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
 
@@ -30,7 +29,7 @@ export async function POST(request: Request) {
         const newDoc = await productsRef.add(productData);
 
         return NextResponse.json({ id: newDoc.id, ...productData }, { status: 201 });
-    } catch (_error) {
+    } catch (error) {
         return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
     }
 }

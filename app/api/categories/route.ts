@@ -14,8 +14,7 @@ export async function GET() {
         return NextResponse.json(categories);
     } catch (error) {
         console.error("Error fetching categories:", error);
-        // Return empty array instead of error object to prevent client crash
-        return NextResponse.json([]);
+        return NextResponse.json({ error: "Failed to fetch categories" }, { status: 500 });
     }
 }
 

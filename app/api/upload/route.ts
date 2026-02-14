@@ -1,5 +1,7 @@
+
 import { NextRequest, NextResponse } from "next/server";
-import { storage } from "@/lib/firebase";
+import { writeFile } from "fs/promises";
+import path from "path";
 
 export async function POST(req: NextRequest) {
     try {
@@ -11,29 +13,15 @@ export async function POST(req: NextRequest) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${Date.now()}_${file.name.replaceAll(" ", "_")}`;
+        const filename = Date.now() + "_" + file.name.replaceAll(" ", "_");
+        const uploadDir = path.join(process.cwd(), "public/uploads");
+        const filePath = path.join(uploadDir, filename);
 
-        const bucket = storage.bucket();
-        const storageFile = bucket.file(`products/${filename}`);
+        await writeFile(filePath, buffer);
 
-        await storageFile.save(buffer, {
-            contentType: file.type,
-            metadata: {
-                firebaseStorageDownloadTokens: crypto.randomUUID(),
-            }
-        });
-
-        // Make the file public
-        await storageFile.makePublic();
-
-        const publicUrl = storageFile.publicUrl();
-
-        return NextResponse.json({ url: publicUrl }, { status: 201 });
+        return NextResponse.json({ url: `/uploads/${filename}` }, { status: 201 });
     } catch (error) {
         console.error("Upload Error:", error);
-        return NextResponse.json({
-            error: "Failed to upload file.",
-            details: error instanceof Error ? error.message : String(error)
-        }, { status: 500 });
+        return NextResponse.json({ error: "Failed to upload file." }, { status: 500 });
     }
 }

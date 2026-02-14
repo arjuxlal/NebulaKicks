@@ -54,7 +54,7 @@ export default function ShopPage() {
         try {
             const res = await fetch("/api/categories");
             const data = await res.json();
-            const categoryNames = data.map((cat: { name: string }) => cat.name);
+            const categoryNames = data.map((cat: any) => cat.name);
             setCategories(["All", ...categoryNames]);
         } catch (error) {
             console.error("Failed to fetch categories:", error);
@@ -245,7 +245,7 @@ export default function ShopPage() {
                                         ...product,
                                         image: Array.isArray(product.images) && product.images.length > 0
                                             ? product.images[0]
-                                            : (product as Product).image || '/placeholder-shoe.png'
+                                            : (product as any).image || '/placeholder-shoe.png'
                                     }}
                                     onView={() => setSelectedProduct(product)}
                                 />                            </motion.div>

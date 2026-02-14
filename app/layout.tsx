@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Orbitron, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import Navbar from "@/components/Navbar";
+import CartDrawer from "@/components/CartDrawer";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -33,7 +35,11 @@ export default function RootLayout({
       <body
         className={`${orbitron.variable} ${inter.variable} font-inter bg-deep-dark text-white antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <Navbar />
+          {children}
+          <CartDrawer />
+        </Providers>
       </body>
     </html>
   );
