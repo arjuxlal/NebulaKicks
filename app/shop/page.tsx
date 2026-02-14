@@ -67,12 +67,23 @@ export default function ShopPage() {
         // Search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(
-                (p) =>
-                    p.name?.toLowerCase().includes(query) ||
-                    p.brand?.toLowerCase().includes(query) ||
-                    p.description?.toLowerCase().includes(query)
-            );
+
+            // Check if query matches a category name
+            const matchingCategory = categories.find(c => c.toLowerCase() === query);
+
+            if (matchingCategory && matchingCategory !== "All") {
+                // If searching for a specific category, show only products in that category
+                filtered = filtered.filter(p => p.category === matchingCategory);
+            } else {
+                // Otherwise, search across name, brand, description, and category
+                filtered = filtered.filter(
+                    (p) =>
+                        p.name?.toLowerCase().includes(query) ||
+                        p.brand?.toLowerCase().includes(query) ||
+                        p.description?.toLowerCase().includes(query) ||
+                        p.category?.toLowerCase().includes(query)
+                );
+            }
         }
 
         // Category filter
