@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function Hero() {
@@ -46,10 +47,12 @@ export default function Hero() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                 >
-                    <button className="neon-button-cyan text-lg font-bold group flex items-center gap-2 mx-auto">
-                        <span>SHOP COLLECTION</span>
-                        <div className="w-2 h-2 rounded-full bg-neon-cyan group-hover:animate-ping" />
-                    </button>
+                    <Link href="/shop" className="block w-fit mx-auto">
+                        <button className="neon-button-cyan text-lg font-bold group flex items-center gap-2">
+                            <span>SHOP COLLECTION</span>
+                            <div className="w-2 h-2 rounded-full bg-neon-cyan group-hover:animate-ping" />
+                        </button>
+                    </Link>
                 </motion.div>
             </div>
 

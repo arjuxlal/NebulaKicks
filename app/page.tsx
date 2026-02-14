@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Hero from "@/components/Hero";
 import ProductFeed from "@/components/ProductFeed";
 
@@ -11,13 +12,27 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-6">
             <div>
-              <h2 className="text-5xl font-orbitron font-bold">LATEST <span className="text-ultraviolet glow-text-purple">DROPS</span></h2>
+              <h2 className="text-5xl font-orbitron font-bold uppercase tracking-tighter">LATEST <span className="text-ultraviolet glow-text-purple">DROPS</span></h2>
               <p className="text-white/40 mt-2 font-inter">Limited edition cyber-sneakers for the digital frontier.</p>
             </div>
-            <button className="neon-button-cyan py-2 text-sm">VIEW ALL COLLECTIONS</button>
+            <Link href="/shop">
+              <button className="neon-button-cyan py-2 text-sm uppercase font-bold tracking-widest">VIEW ALL COLLECTIONS</button>
+            </Link>
           </div>
 
           <ProductFeed />
+        </div>
+      </section>
+
+      {/* Featured Drops Section */}
+      <section className="bg-black py-24 px-4 overflow-hidden border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-orbitron font-bold uppercase tracking-tighter">FEATURED <span className="text-neon-cyan glow-text-cyan">GEAR</span></h2>
+            <p className="text-white/40 mt-2 font-inter">Hand-picked selections from the Nebula archive.</p>
+          </div>
+
+          <ProductFeed category="Featured" />
         </div>
       </section>
 

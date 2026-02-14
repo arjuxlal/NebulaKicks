@@ -10,9 +10,10 @@ interface Product {
     price: number;
     image: string;
     description: string;
+    category?: string;
 }
 
-export default function ProductFeed() {
+export default function ProductFeed({ category }: { category?: string }) {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -23,7 +24,12 @@ export default function ProductFeed() {
             try {
                 const res = await fetch("/api/products");
                 const data = await res.json();
-                setProducts(data);
+
+                if (category) {
+                    setProducts(data.filter((p: Product) => p.category === category));
+                } else {
+                    setProducts(data);
+                }
             } catch (error) {
                 console.error("Error fetching products:", error);
             } finally {
